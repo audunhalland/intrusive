@@ -9,13 +9,13 @@ namespace intrusive {
      *  list node property. Must be included in all classes
      *  that are to be members of list
      */
-    class node {
+    class listnode {
     public:
-        node()
+        listnode()
             : prev(this),
               next(this) {}
 
-        ~node() {
+        ~listnode() {
             erase_partial();
         }
 
@@ -32,10 +32,10 @@ namespace intrusive {
             next->prev = prev;
         }
 
-        node *prev;
-        node *next;
+        listnode *prev;
+        listnode *next;
 
-        template <typename T, node T::*N>
+        template <typename T, listnode T::*N>
         friend class list;
     };
 
@@ -46,7 +46,7 @@ namespace intrusive {
      *  property of the object being part of it.
      *
      *  Advantages to std::list:
-     *   * No extra node allocation (good for realtime applications)
+     *   * No extra listnode allocation (good for realtime applications)
      *   * Objects can be moved/erased without iterator to list
      *   * Automatic cleanup upon destruction of members in list
      *
@@ -57,10 +57,10 @@ namespace intrusive {
      *
      *  template parameters:
      *  T     Class to be contained in the list
-     *  T::*N Member pointer to the node property of the class to
+     *  T::*N Member pointer to the listnode property of the class to
      *        be contained in the list
      */
-    template <typename T, node T::*N>
+    template <typename T, listnode T::*N>
     class list {
     public:
         class iterator {
@@ -95,9 +95,9 @@ namespace intrusive {
             }
 
         private:
-            iterator(node *node) : node(node) {}
+            iterator(listnode *node) : node(node) {}
 
-            node *node;
+            listnode *node;
 
             friend class list<T, N>;
         };
@@ -105,7 +105,7 @@ namespace intrusive {
         bool empty() const { return head.next == &head; }
         size_t size() const {
             size_t n = 0;
-            for (node *node = head.next; node != &head; node = node->next) {
+            for (listnode *node = head.next; node != &head; node = node->next) {
                 ++n;
             }
             return n;
@@ -117,7 +117,7 @@ namespace intrusive {
         void pop_front() { head.next->erase(); }
 
         static iterator insert(iterator pos, T &obj) {
-            node *node = &(obj.*N);
+            listnode *node = &(obj.*N);
             node->erase_partial();
             node->prev = pos.node->prev;
             node->next = pos.node;
@@ -158,14 +158,13 @@ namespace intrusive {
     private:
         /*
          *  Core function (only one without type safety):
-         *  Convert from node pointer to object pointer
+         *  Convert from listnode pointer to object pointer
          */
-        static T *to_object(node *n) {
-            node *offset = &(((T*)0)->*N);
-            return (T*)(((char *)n) - (long)offset);
+        static inline T *to_object(listnode *n) {
+            return (T*)(((char *)n) - (long)&(((T*)0)->*N));
         }
 
-        node head;
+        listnode head;
     };
 }
 

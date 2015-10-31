@@ -1,5 +1,5 @@
 
-#include "intrusive.hpp"
+#include <intrusive/list.hpp>
 
 #include <iostream>
 
@@ -10,11 +10,11 @@ public:
 
     int value;
 
-    intrusive::node nodeA;
-    intrusive::node nodeB;
+    intrusive::listnode nodeA;
+    intrusive::listnode nodeB;
 };
 
-template <intrusive::node element::*N>
+template <intrusive::listnode element::*N>
 void expect(std::string test_name,
             intrusive::list<element, N> &list,
             size_t size,
