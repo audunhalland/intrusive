@@ -13,7 +13,5 @@ property of the object being part of it.
    simultaneously. It will depend on the pointer-to-member
    property T::*N passed to intrusive::list.
 
-## template parameters:
-T     Class to be contained in the list
-T::*N Member pointer to the node property of the class to
-      be contained in the list
+## Missing/TODO:
+ * Thread safety
