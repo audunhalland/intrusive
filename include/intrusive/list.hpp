@@ -71,6 +71,10 @@ namespace intrusive {
                 return to_object(node);
             }
 
+            T& operator*() {
+                return *to_object(node);
+            }
+
             bool operator!=(const iterator &other) {
                 return node != other.node;
             }
